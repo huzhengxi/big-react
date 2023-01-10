@@ -1,6 +1,7 @@
 import { Props, Key, Type, Ref } from 'shared/ReactTypes';
 import { WorkTag } from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
+import { Container } from 'hostConfig';
 
 export class FiberNode {
 	type: Type;
@@ -46,5 +47,20 @@ export class FiberNode {
 		this.alternate = null;
 		// 副作用
 		this.flags = NoFlags;
+	}
+}
+
+export class FiberRootNode {
+	container: Container;
+	//current 指针 指向 HostRootFiber
+	current: FiberNode;
+	// 指向更新完成以后的 HostRootFiber，也就是完成递归流程的 HostRootFiber
+	finishedWork: FiberNode | null;
+
+	constructor(container: Container, hostRootFiber: FiberNode) {
+		this.container = container;
+		this.current = hostRootFiber;
+		hostRootFiber.stateNode = this;
+		this.finishedWork = null;
 	}
 }

@@ -11,3 +11,5 @@ export interface IReactElement {
 	ref: Ref;
 	__mark: string;
 }
+
+export type Action<State> = State | ((prevState: State) => State);
