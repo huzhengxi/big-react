@@ -17,9 +17,10 @@ export class FiberNode {
 	index: number;
 
 	memorizedProps: Props | null;
+	memorizedState: any;
 	alternate: FiberNode | null;
-
 	flags: Flags;
+	updateQueue: unknown;
 
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		// 作为实例
@@ -64,3 +65,28 @@ export class FiberRootNode {
 		this.finishedWork = null;
 	}
 }
+
+export const createWorkInProgress = (current: FiberNode, pendingProps: Props): FiberNode => {
+	let wip = current.alternate;
+
+	if (wip === null) {
+		// mount
+		wip = new FiberNode(current.tag, pendingProps, current.key);
+		wip.stateNode = current.stateNode;
+
+		wip.alternate = current;
+		current.alternate = wip;
+	} else {
+		// update
+		wip.pendingProps = pendingProps;
+		wip.flags = NoFlags;
+	}
+
+	wip.type = current.type;
+	wip.updateQueue = current.updateQueue;
+	wip.child = current.child;
+	wip.memorizedProps = current.memorizedProps;
+	wip.memorizedProps = current.memorizedProps;
+
+	return wip;
+};
