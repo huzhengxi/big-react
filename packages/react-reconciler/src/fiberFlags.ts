@@ -7,3 +7,5 @@ export const Placement = 0b00000010;
 export const Update = 0b00000100;
 // 结构相关
 export const ChildDeletion = 0b000001000;
+
+export const MutationMask = Placement | Update | ChildDeletion;
