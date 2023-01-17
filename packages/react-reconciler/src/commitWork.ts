@@ -45,10 +45,12 @@ const commitPlacement = (finishedWork: FiberNode) => {
 	// 找到 Parent DOM
 	const hostParent = getHostParent(finishedWork);
 	// 把 finishedWork 对应的 DOM append 到 parent DOM 中
-	appendPlacementNodeIntoContainer(finishedWork, hostParent);
+	if (hostParent) {
+		appendPlacementNodeIntoContainer(finishedWork, hostParent);
+	}
 };
 
-const getHostParent = (fiber: FiberNode): Container => {
+const getHostParent = (fiber: FiberNode): Container | null => {
 	let parent = fiber.return;
 
 	// HostComponent HostRoot
@@ -65,6 +67,7 @@ const getHostParent = (fiber: FiberNode): Container => {
 	if (__DEV__) {
 		console.warn('未找到 HostParent', fiber);
 	}
+	return null;
 };
 
 function appendPlacementNodeIntoContainer(finishedWork: FiberNode, hostParent: Container) {

@@ -1,7 +1,7 @@
 import { FiberNode, createWorkInProgress } from './fiber';
 import { HostComponent, HostText, HostRoot } from './workTags';
-import { createInstance } from 'hostConfig';
-import { appendInitialChild, createTextInstance } from './hostConfig';
+import { Container, createInstance } from 'hostConfig';
+import { appendInitialChild, createTextInstance } from 'hostConfig';
 import { NoFlags } from './fiberFlags';
 
 export const completeWork = (wip: FiberNode) => {
@@ -26,7 +26,7 @@ export const completeWork = (wip: FiberNode) => {
 				// update
 			} else {
 				// 1. 构建 DOM 树
-				const instance = createTextInstance(wip.type, newProps);
+				const instance = createTextInstance(wip.type);
 				wip.stateNode = instance;
 			}
 			bubbleProperties(wip);
@@ -42,7 +42,7 @@ export const completeWork = (wip: FiberNode) => {
 	}
 };
 
-function appendAllChildren(parent: FiberNode, wip: FiberNode) {
+function appendAllChildren(parent: Container, wip: FiberNode) {
 	let node = wip.child;
 
 	while (node !== null) {
