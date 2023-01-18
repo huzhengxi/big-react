@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"lint": "eslint --ext .ts,.jsx,.tsx --fix --quiet ./packages",
-		"build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js"
+		"build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js",
+		"prepare": "husky install"
 	},
 	"keywords": [],
 	"author": "",
@@ -23,7 +24,7 @@
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin,": "link:@typescript-eslint/eslint-plugin,",
 		"eslint-plugin-prettier": "^4.2.1",
-		"husky": "^8.0.2",
+		"husky": "^8.0.0",
 		"prettier": "^2.8.1",
 		"rimraf": "^3.0.2",
 		"rollup": "^3.9.0",
