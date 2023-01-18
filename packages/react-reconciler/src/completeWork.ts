@@ -1,8 +1,7 @@
-import { FiberNode, createWorkInProgress } from './fiber';
-import { HostComponent, HostText, HostRoot } from './workTags';
-import { Container, createInstance } from 'hostConfig';
-import { appendInitialChild, createTextInstance } from 'hostConfig';
+import { Container, appendInitialChild, createInstance, createTextInstance } from 'hostConfig';
+import { FiberNode } from './fiber';
 import { NoFlags } from './fiberFlags';
+import { FunctionComponent, HostComponent, HostRoot, HostText } from './workTags';
 
 export const completeWork = (wip: FiberNode) => {
 	const newProps = wip.pendingProps;
@@ -26,12 +25,15 @@ export const completeWork = (wip: FiberNode) => {
 				// update
 			} else {
 				// 1. 构建 DOM 树
-				const instance = createTextInstance(wip.type);
+				const instance = createTextInstance(newProps.content);
 				wip.stateNode = instance;
 			}
 			bubbleProperties(wip);
 			break;
 		case HostRoot:
+			bubbleProperties(wip);
+			break;
+		case FunctionComponent:
 			bubbleProperties(wip);
 			break;
 		default:

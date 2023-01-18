@@ -46,6 +46,8 @@ export class FiberNode {
 		// 作为工作单元
 		this.pendingProps = pendingProps;
 		this.memorizedProps = null;
+		this.memorizedState = null;
+		this.updateQueue = null;
 
 		this.alternate = null;
 		// 副作用

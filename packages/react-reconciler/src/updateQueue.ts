@@ -41,7 +41,7 @@ export const processUpdateQueue = <State>(
 			result.memorizedState = action(baseState);
 		} else {
 			// baseState为1， action为 2 --> memoriedState 就为 2
-			result.memorizedState = baseState;
+			result.memorizedState = action;
 		}
 	}
 
