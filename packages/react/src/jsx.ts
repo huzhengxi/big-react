@@ -14,6 +14,14 @@ const ReactElement = function (type: Type, key: Key, ref: Ref, props: Props): Re
 	return element;
 };
 
+function hasValidKey(config: any) {
+	return config.key !== undefined;
+}
+
+function hasValidRef(config: any) {
+	return config.ref !== undefined;
+}
+
 export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
 	let key: Key = null;
 	const props: Props = {};
@@ -22,13 +30,16 @@ export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
 	for (const prop in config) {
 		const val = config[prop];
 		if (prop === 'key') {
-			if (val !== undefined) {
+			if (hasValidKey(config)) {
 				key = `${val}`;
 			}
 			continue;
 		}
 		if (prop === 'ref') {
-			ref = val;
+			if (hasValidRef(config)) {
+				ref = val;
+			}
+			continue;
 		}
 
 		if (Object.hasOwnProperty.call(config, prop)) {
@@ -38,11 +49,12 @@ export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
 
 	const maybeChildrenLength = maybeChildren.length;
 	if (maybeChildrenLength) {
-		// props.children = child
-		props.children = maybeChildren[0];
-	} else {
-		//  props.children = [child1, child2, ...]
-		props.children = maybeChildren;
+		// 将多余参数作为 children
+		if (maybeChildrenLength === 1) {
+			props.children = maybeChildren[0];
+		} else {
+			props.children = maybeChildren;
+		}
 	}
 
 	return ReactElement(type, key, ref, props);
@@ -56,13 +68,17 @@ export const jsxDEV = (type: ElementType, config: any) => {
 	for (const prop in config) {
 		const val = config[prop];
 		if (prop === 'key') {
-			if (val !== undefined) {
+			if (hasValidKey(config)) {
 				key = `${val}`;
 			}
 			continue;
 		}
 		if (prop === 'ref') {
 			ref = val;
+			if (hasValidRef(config)) {
+				ref = val;
+			}
+			continue;
 		}
 
 		if (Object.prototype.hasOwnProperty.call(config, prop)) {
@@ -71,4 +87,8 @@ export const jsxDEV = (type: ElementType, config: any) => {
 	}
 
 	return ReactElement(type, key, ref, props);
+};
+
+export const isValidElement = (object: any) => {
+	return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
 };

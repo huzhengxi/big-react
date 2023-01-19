@@ -92,7 +92,7 @@ function performUnitOfWork(fiber: FiberNode) {
 	// beginWork 执行完成后返回 fiber 的子 fiber
 	// 子 fiber 也就是 next 有可能为null
 	const next = beginWork(fiber);
-	fiber.memorizedProps = fiber.pendingProps;
+	fiber.memoizedProps = fiber.pendingProps;
 
 	// 子 fiber 为空 说明递到最深层，就开始执行归的过程
 	if (next == null) {

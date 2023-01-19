@@ -13,7 +13,7 @@ export default [
 		input: `${packagePath}/${module}`,
 		output: {
 			file: `${packageDistPath}/index.js`,
-			name: 'index.js',
+			name: 'React',
 			format: 'umd'
 		},
 		plugins: [
@@ -37,13 +37,13 @@ export default [
 			// jsx-runtime
 			{
 				file: `${packageDistPath}/jsx-runtime.js`,
-				name: 'jsx-runtime.js',
+				name: 'jsx-runtime',
 				format: 'umd'
 			},
 			// jsx-dev-runtime
 			{
 				file: `${packageDistPath}/jsx-dev-runtime.js`,
-				name: 'jsx-dev-runtime.js',
+				name: 'jsx-dev-runtime',
 				format: 'umd'
 			}
 		],

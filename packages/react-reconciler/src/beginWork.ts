@@ -29,14 +29,14 @@ export const beginWork = (wip: FiberNode) => {
 };
 
 function updateHostRoot(wip: FiberNode) {
-	const baseState = wip.memorizedState;
+	const baseState = wip.memoizedState;
 	const updateQueue = wip.updateQueue as UpdateQueue<Element>;
 	const pending = updateQueue.shared.pending;
 	updateQueue.shared.pending = null;
 	const { memorizedState } = processUpdateQueue(baseState, pending);
-	wip.memorizedState = memorizedState;
+	wip.memoizedState = memorizedState;
 
-	const nextChildren = wip.memorizedState;
+	const nextChildren = wip.memoizedState;
 	reconcileChildren(wip, nextChildren);
 
 	return wip.child;
