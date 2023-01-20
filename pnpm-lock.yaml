@@ -12,6 +12,7 @@ importers:
       '@rollup/plugin-alias': ^4.0.2
       '@rollup/plugin-commonjs': ^24.0.0
       '@rollup/plugin-replace': ^5.0.2
+      '@types/jest': ^29.2.6
       '@types/react': ^18.0.26
       '@types/react-dom': ^18.0.9
       '@typescript-eslint/eslint-plugin': ^5.47.1
@@ -42,6 +43,7 @@ importers:
       '@rollup/plugin-alias': registry.npmmirror.com/@rollup/plugin-alias/4.0.2_rollup@3.9.0
       '@rollup/plugin-commonjs': registry.npmmirror.com/@rollup/plugin-commonjs/24.0.0_rollup@3.9.0
       '@rollup/plugin-replace': registry.npmmirror.com/@rollup/plugin-replace/5.0.2_rollup@3.9.0
+      '@types/jest': registry.npmmirror.com/@types/jest/29.2.6
       '@types/react': registry.npmmirror.com/@types/react/18.0.26
       '@types/react-dom': registry.npmmirror.com/@types/react-dom/18.0.10
       '@typescript-eslint/eslint-plugin': registry.npmmirror.com/@typescript-eslint/eslint-plugin/5.47.1_txmweb6yn7coi7nfrp22gpyqmy
@@ -2663,6 +2665,15 @@ packages:
     version: 3.0.1
     dependencies:
       '@types/istanbul-lib-report': registry.npmmirror.com/@types/istanbul-lib-report/3.0.0
+    dev: true
+
+  registry.npmmirror.com/@types/jest/29.2.6:
+    resolution: {integrity: sha512-XEUC/Tgw3uMh6Ho8GkUtQ2lPhY5Fmgyp3TdlkTJs1W9VgNxs+Ow/x3Elh8lHQKqCbZL0AubQuqWjHVT033Hhrw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/jest/-/jest-29.2.6.tgz}
+    name: '@types/jest'
+    version: 29.2.6
+    dependencies:
+      expect: registry.npmmirror.com/expect/29.3.1
+      pretty-format: registry.npmmirror.com/pretty-format/29.3.1
     dev: true
 
   registry.npmmirror.com/@types/jsdom/20.0.1:
