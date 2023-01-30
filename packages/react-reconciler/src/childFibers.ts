@@ -3,7 +3,6 @@ import { REACT_ELEMENT_TYPE } from '../../shared/ReactSymbols';
 import { FiberNode, FiberRootNode, createFiberFromElement, createWorkInProgress } from './fiber';
 import { HostText } from './workTags';
 import { ChildDeletion, Placement } from './fiberFlags';
-import { Key } from '../../shared/ReactTypes';
 
 function ChildReconciler(shouldTrackEffects: boolean) {
 	function deleteChild(returnFiber: FiberNode, childToDelete: FiberNode) {
