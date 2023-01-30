@@ -68,7 +68,7 @@ const commitDeletion = (childToDelete: FiberNode) => {
 				}
 				return;
 			case FunctionComponent:
-				// TODO useEffect unmount
+				// TODO useEffect unmount、解绑 ref
 				return;
 			default:
 				if (__DEV__) {
