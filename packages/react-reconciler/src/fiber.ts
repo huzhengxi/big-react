@@ -23,6 +23,7 @@ export class FiberNode {
 	flags: Flags;
 	subtreeFlags: Flags;
 	updateQueue: unknown;
+	deletions: FiberNode[] | null;
 
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		// 作为实例
@@ -53,6 +54,7 @@ export class FiberNode {
 		// 副作用
 		this.flags = NoFlags;
 		this.subtreeFlags = NoFlags;
+		this.deletions = null;
 	}
 }
 
@@ -93,6 +95,7 @@ export const createWorkInProgress = (current: FiberNode, pendingProps: Props): F
 	wip.child = current.child;
 	wip.memoizedProps = current.memoizedProps;
 	wip.memoizedProps = current.memoizedProps;
+	wip.deletions = null;
 
 	return wip;
 };
