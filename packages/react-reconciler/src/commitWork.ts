@@ -129,7 +129,8 @@ const commitPlacement = (finishedWork: FiberNode) => {
 	}
 };
 
-const getHostParent = (fiber: FiberNode): Container | null => {
+function getHostSibling(fiber: FiberNode) {}
+function getHostParent(fiber: FiberNode): Container | null {
 	let parent = fiber.return;
 
 	// HostComponent HostRoot
@@ -147,7 +148,7 @@ const getHostParent = (fiber: FiberNode): Container | null => {
 		console.warn('未找到 HostParent', fiber);
 	}
 	return null;
-};
+}
 
 function appendPlacementNodeIntoContainer(finishedWork: FiberNode, hostParent: Container) {
 	if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
