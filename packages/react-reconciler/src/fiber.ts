@@ -1,5 +1,5 @@
 import { Props, Key, Type, Ref } from 'shared/ReactTypes';
-import { WorkTag, FunctionComponent, HostComponent } from './workTags';
+import { WorkTag, FunctionComponent, HostComponent, Fragment } from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
 import { Container } from 'hostConfig';
 import { ReactElementType } from 'shared/ReactTypes';
@@ -28,7 +28,7 @@ export class FiberNode {
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		// 作为实例
 		this.tag = tag;
-		this.key = key;
+		this.key = key || null;
 
 		// 保存的是jsx，如果是functionComponent的话 保存的是 function 执行的结果
 		// 如果是 classComponent 的话 保存的是 render 方法的执行结果
@@ -113,4 +113,8 @@ export function createFiberFromElement(element: ReactElementType) {
 	fiber.type = type;
 
 	return fiber;
+}
+
+export function createFiberFromFragment(elements: any[], key: Key) {
+	return new FiberNode(Fragment, null, key);
 }
