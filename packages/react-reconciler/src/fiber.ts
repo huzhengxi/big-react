@@ -3,6 +3,7 @@ import { WorkTag, FunctionComponent, HostComponent, Fragment } from './workTags'
 import { Flags, NoFlags } from './fiberFlags';
 import { Container } from 'hostConfig';
 import { ReactElementType } from 'shared/ReactTypes';
+import { Lanes, Lane, NoLanes, NoLane } from './fiberLanes';
 
 export class FiberNode {
 	type: Type;
@@ -64,12 +65,18 @@ export class FiberRootNode {
 	current: FiberNode;
 	// 指向更新完成以后的 HostRootFiber，也就是完成递归流程的 HostRootFiber
 	finishedWork: FiberNode | null;
+	// 所有未必消费的 lane 的集合
+	pendingLanes: Lanes;
+	// 本次更新消费的 lane
+	finishedLane: Lane;
 
 	constructor(container: Container, hostRootFiber: FiberNode) {
 		this.container = container;
 		this.current = hostRootFiber;
 		hostRootFiber.stateNode = this;
 		this.finishedWork = null;
+		this.pendingLanes = NoLanes;
+		this.finishedLane = NoLane;
 	}
 }
 
