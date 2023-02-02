@@ -55,11 +55,15 @@ export const completeWork = (wip: FiberNode) => {
 };
 
 function appendAllChildren(parent: Container, wip: FiberNode) {
+	// 遍历 workInProgress所有子孙 DOM 元素，依次挂载
 	let node = wip.child;
-
 	while (node !== null) {
 		if (node.tag === HostComponent || node.tag === HostText) {
 			appendInitialChild(parent, node.stateNode);
+		} else if (node.child !== null) {
+			node.child.return = node;
+			node = node.child;
+			continue;
 		}
 
 		if (node === wip) {
