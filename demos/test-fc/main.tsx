@@ -9,11 +9,15 @@ function App() {
 			: [<li key={'3'}>3</li>, <li key={'2'}>2</li>, <li key={'1'}>1</li>];
 	// return <ul onClick={() => setNum(num + 1)}>{arr}</ul>;
 	return (
-		<ul>
-			<li>3</li>
-			<li>4</li>
-			{arr}
-		</ul>
+		<div
+			onClick={() => {
+				setNum((num) => num + 1);
+				setNum((num) => num + 1);
+				setNum((num) => num + 1);
+			}}
+		>
+			{num}
+		</div>
 	);
 }
 

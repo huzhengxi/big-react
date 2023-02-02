@@ -4,15 +4,16 @@ import { HostComponent, HostRoot, HostText, FunctionComponent, Fragment } from '
 import { ReactElementType } from '../../shared/ReactTypes';
 import { moundChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
+import { Lane } from './fiberLanes';
 /**递归中的递阶段 */
 
-export const beginWork = (wip: FiberNode) => {
+export const beginWork = (wip: FiberNode, renderLane: Lane) => {
 	// 比较，返回子 fiberNode
 	switch (wip.tag) {
 		case HostRoot:
 			// HostRoot 的 beginWork 工作流程：
 			// 1. 计算状态的最新值 2. 创造子fiberNode
-			return updateHostRoot(wip);
+			return updateHostRoot(wip, renderLane);
 		case HostComponent: //例如：<div></div> 它自己无法触发更新
 			// 创建子 fiberNode
 			return updateHostComponent(wip);
@@ -21,7 +22,7 @@ export const beginWork = (wip: FiberNode) => {
 		case Fragment:
 			return updateFragment(wip);
 		case FunctionComponent:
-			return updateFunctionComponent(wip);
+			return updateFunctionComponent(wip, renderLane);
 		default:
 			if (__DEV__) {
 				console.warn('beginWork 未实现的类型', wip);
@@ -36,12 +37,12 @@ function updateFragment(wip: FiberNode) {
 	return wip.child;
 }
 
-function updateHostRoot(wip: FiberNode) {
+function updateHostRoot(wip: FiberNode, renderLane: Lane) {
 	const baseState = wip.memoizedState;
 	const updateQueue = wip.updateQueue as UpdateQueue<Element>;
 	const pending = updateQueue.shared.pending;
 	updateQueue.shared.pending = null;
-	const { memorizedState } = processUpdateQueue(baseState, pending);
+	const { memorizedState } = processUpdateQueue(baseState, pending, renderLane);
 	wip.memoizedState = memorizedState;
 
 	const nextChildren = wip.memoizedState;
@@ -57,8 +58,8 @@ function updateHostComponent(wip: FiberNode) {
 	return wip.child;
 }
 
-function updateFunctionComponent(wip: FiberNode) {
-	const nextChildren = renderWithHooks(wip);
+function updateFunctionComponent(wip: FiberNode, renderLane: Lane) {
+	const nextChildren = renderWithHooks(wip, renderLane);
 	reconcileChildren(wip, nextChildren);
 	return wip.child;
 }

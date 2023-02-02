@@ -45,20 +45,36 @@ export const enqueueUpdate = <State>(updateQueue: UpdateQueue<State>, update: Up
 
 export const processUpdateQueue = <State>(
 	baseState: State,
-	pendingUpdate: Update<State> | null
+	pendingUpdate: Update<State> | null,
+	renderLane: Lane
 ): { memorizedState: State } => {
 	const result: ReturnType<typeof processUpdateQueue<State>> = { memorizedState: baseState };
 
 	if (pendingUpdate !== null) {
-		const action = pendingUpdate.action;
-		if (action instanceof Function) {
-			// baseState为1， action为 x=>4x --> memoriedState 就为 1 * 4 = 4
-			result.memorizedState = action(baseState);
-		} else {
-			// baseState为1， action为 2 --> memoriedState 就为 2
-			result.memorizedState = action;
-		}
+		// 第一个 update
+		const first = pendingUpdate.next;
+		let pending = pendingUpdate.next as Update<any>;
+		do {
+			const updateLane = pending.lane;
+			if (updateLane === renderLane) {
+				const action = pending.action;
+				if (action instanceof Function) {
+					// baseState为1， action为 x=>4x --> memoriedState 就为 1 * 4 = 4
+					baseState = action(baseState);
+				} else {
+					// baseState为1， action为 2 --> memoriedState 就为 2
+					baseState = action;
+				}
+			} else {
+				if (__DEV__) {
+					console.warn('不应该进入逻辑 updateLane !== renderLane');
+				}
+			}
+			pending = pending.next as Update<any>;
+		} while (pending !== first);
 	}
+
+	result.memorizedState = baseState;
 
 	return result;
 };
