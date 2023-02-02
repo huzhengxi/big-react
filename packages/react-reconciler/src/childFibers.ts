@@ -184,6 +184,10 @@ function ChildReconciler(shouldTrackEffects: boolean) {
 
 		// 判断当前 fiber 的类型
 		if (typeof newChild === 'object' && newChild !== null) {
+			// 多节点的情况 ul > li * 3
+			if (Array.isArray(newChild)) {
+				return reconcileChildrenArray(returnFiber, currentFiber, newChild);
+			}
 			switch (newChild.$$typeof) {
 				case REACT_ELEMENT_TYPE:
 					return placeSingleChild(reconcileSingleElement(returnFiber, currentFiber, newChild));
@@ -192,10 +196,6 @@ function ChildReconciler(shouldTrackEffects: boolean) {
 						console.warn('未实现的 reconcile 类型', newChild);
 					}
 					break;
-			}
-			// 多节点的情况 ul > li * 3
-			if (Array.isArray(newChild)) {
-				return reconcileChildrenArray(returnFiber, currentFiber, newChild);
 			}
 		}
 
@@ -224,7 +224,7 @@ function updateFromMap(
 	element: any
 ): FiberNode | null {
 	const keyToUse = element?.key ?? index;
-	const before = existingChildren.get(keyToUse);
+	const before = existingChildren.get(keyToUse) || null;
 
 	// HostText
 	if (typeof element === 'string' || typeof element === 'number') {
@@ -241,6 +241,9 @@ function updateFromMap(
 	if (typeof element === 'object' && element !== null) {
 		switch (element.$$typeof) {
 			case REACT_ELEMENT_TYPE: {
+				if (element.type === REACT_FRAGMENT_TYPE) {
+					return updateFragment(returnFiber, before, element, keyToUse, existingChildren);
+				}
 				if (before) {
 					if (before.type === element.type) {
 						existingChildren.delete(keyToUse);
@@ -256,6 +259,10 @@ function updateFromMap(
 			console.warn('还未实现数组类型的 child');
 		}
 	}
+
+	if (Array.isArray(element)) {
+		return updateFragment(returnFiber, before, element, keyToUse, existingChildren);
+	}
 	return null;
 }
 
@@ -269,7 +276,12 @@ function updateFragment(
 	let fiber: FiberNode;
 	if (!current || current.tag !== Fragment) {
 		fiber = createFiberFromFragment(elements, key);
+	} else {
+		existingChildren.delete(key);
+		fiber = useFiber(current, elements);
 	}
+	fiber.return = returnFiber;
+	return fiber;
 }
 
 /**

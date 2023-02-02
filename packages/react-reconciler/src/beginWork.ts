@@ -1,6 +1,6 @@
 import { FiberNode } from './fiber';
 import { UpdateQueue, processUpdateQueue } from './updateQueue';
-import { HostComponent, HostRoot, HostText, FunctionComponent } from './workTags';
+import { HostComponent, HostRoot, HostText, FunctionComponent, Fragment } from './workTags';
 import { ReactElementType } from '../../shared/ReactTypes';
 import { moundChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
@@ -18,6 +18,8 @@ export const beginWork = (wip: FiberNode) => {
 			return updateHostComponent(wip);
 		case HostText:
 			return null;
+		case Fragment:
+			return updateFragment(wip);
 		case FunctionComponent:
 			return updateFunctionComponent(wip);
 		default:
@@ -27,6 +29,12 @@ export const beginWork = (wip: FiberNode) => {
 			break;
 	}
 };
+
+function updateFragment(wip: FiberNode) {
+	const nextChildren = wip.pendingProps;
+	reconcileChildren(wip, nextChildren);
+	return wip.child;
+}
 
 function updateHostRoot(wip: FiberNode) {
 	const baseState = wip.memoizedState;
