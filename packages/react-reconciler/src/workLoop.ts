@@ -1,14 +1,18 @@
-import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
-import { beginWork } from './beginWork';
-import { completeWork } from './completeWork';
-import { HostRoot } from './workTags';
-import { MutationMask, NoFlags } from './fiberFlags';
-import { commitMutationEffects } from './commitWork';
-import { Lane, getHighestPriorityLane, mergeLanes, NoLane, SyncLane, markRootFinished } from './fiberLanes';
-import { flashSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
 import { scheduleMicroTask } from 'hostConfig';
+import { beginWork } from './beginWork';
+import { commitMutationEffects } from './commitWork';
+import { completeWork } from './completeWork';
+import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
+import { MutationMask, NoFlags, PassiveMask } from './fiberFlags';
+import { Lane, NoLane, SyncLane, getHighestPriorityLane, markRootFinished, mergeLanes } from './fiberLanes';
+import { flashSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
+import { HostRoot } from './workTags';
+import { unstable_scheduleCallback as scheduleCallback, unstable_NormalPriority as NormalPriority } from 'scheduler';
+
 let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
+// 全局变量，防止多次调用
+let rootDoesHasPassiveEffect = false;
 
 function prepareFreshStack(root: FiberRootNode, lane: Lane) {
 	workInProgress = createWorkInProgress(root.current, {});
@@ -109,6 +113,17 @@ function commitRoot(root: FiberRootNode) {
 
 	markRootFinished(root, lane);
 
+	if ((finishedWork.flags & PassiveMask) !== NoFlags || (finishedWork.subtreeFlags & PassiveMask) !== NoFlags) {
+		if (!rootDoesHasPassiveEffect) {
+			rootDoesHasPassiveEffect = true;
+			// 调度副作用
+			scheduleCallback(NormalPriority, () => {
+				// 执行副作用
+				return;
+			});
+		}
+	}
+
 	// 判断是否存在三个子阶段需要执行的操作
 	const subtreeHasEffect = (finishedWork.subtreeFlags & MutationMask) !== NoFlags;
 	const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags;
@@ -123,6 +138,9 @@ function commitRoot(root: FiberRootNode) {
 	} else {
 		root.current = finishedWork;
 	}
+
+	rootDoesHasPassiveEffect = false;
+	ensureRootIsScheduled(root);
 }
 
 function workLoop() {
