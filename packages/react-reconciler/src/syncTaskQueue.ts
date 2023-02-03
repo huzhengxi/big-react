@@ -20,6 +20,7 @@ export function flashSyncCallbacks() {
 			}
 		} finally {
 			isFlushingSyncQueue = false;
+			syncQueue = null;
 		}
 	}
 }
