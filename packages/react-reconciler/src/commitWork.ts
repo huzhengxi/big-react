@@ -7,7 +7,16 @@ import {
 	removeChild
 } from 'hostConfig';
 import { FiberNode, FiberRootNode, PendingPassiveEffects } from './fiber';
-import { ChildDeletion, MutationMask, NoFlags, Placement, Update, PassiveEffect, Flags } from './fiberFlags';
+import {
+	ChildDeletion,
+	MutationMask,
+	NoFlags,
+	Placement,
+	Update,
+	PassiveEffect,
+	Flags,
+	PassiveMask
+} from './fiberFlags';
 import { FunctionComponent, HostComponent, HostRoot, HostText } from './workTags';
 import { Effect, FCUpdateQueue } from './fiberHooks';
 import { HookHasEffect } from './hookEffectTags';
@@ -20,7 +29,7 @@ export const commitMutationEffects = (finishedWork: FiberNode, root: FiberRootNo
 		// 向下遍历
 		const child: FiberNode | null = nextEffect.child;
 
-		if ((nextEffect.subtreeFlags & MutationMask) !== NoFlags && child !== null) {
+		if ((nextEffect.subtreeFlags & (MutationMask | PassiveMask)) !== NoFlags && child !== null) {
 			nextEffect = child;
 		} else {
 			// 向上遍历 DFS
