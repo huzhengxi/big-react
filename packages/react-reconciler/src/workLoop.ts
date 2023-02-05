@@ -1,13 +1,19 @@
 import { scheduleMicroTask } from 'hostConfig';
 import { beginWork } from './beginWork';
-import { commitMutationEffects } from './commitWork';
+import {
+	commitHookEffectListCreate,
+	commitHookEffectListDestroy,
+	commitHookEffectListUnMount,
+	commitMutationEffects
+} from './commitWork';
 import { completeWork } from './completeWork';
-import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
+import { FiberNode, FiberRootNode, PendingPassiveEffects, createWorkInProgress } from './fiber';
 import { MutationMask, NoFlags, PassiveMask } from './fiberFlags';
 import { Lane, NoLane, SyncLane, getHighestPriorityLane, markRootFinished, mergeLanes } from './fiberLanes';
 import { flashSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
 import { HostRoot } from './workTags';
 import { unstable_scheduleCallback as scheduleCallback, unstable_NormalPriority as NormalPriority } from 'scheduler';
+import { HookHasEffect, Passive } from './hookEffectTags';
 
 let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
@@ -119,6 +125,7 @@ function commitRoot(root: FiberRootNode) {
 			// 调度副作用
 			scheduleCallback(NormalPriority, () => {
 				// 执行副作用
+				flushPassiveEffects(root.pendingPassiveEffects);
 				return;
 			});
 		}
@@ -130,7 +137,7 @@ function commitRoot(root: FiberRootNode) {
 
 	if (subtreeHasEffect || rootHasEffect) {
 		// beforeMutation
-		commitMutationEffects(finishedWork);
+		commitMutationEffects(finishedWork, root);
 		// mutation (Placement)
 		// fiber 树 切换
 		root.current = finishedWork;
@@ -141,6 +148,29 @@ function commitRoot(root: FiberRootNode) {
 
 	rootDoesHasPassiveEffect = false;
 	ensureRootIsScheduled(root);
+}
+
+function flushPassiveEffects(pendingPassiveEffects: PendingPassiveEffects) {
+	// 首先触发所有 unmount effect，且对于某一个 fiber，如果触发了 unmount destroy，本次更新不会再触发 update create
+	pendingPassiveEffects.unmount.forEach((effect) => {
+		commitHookEffectListUnMount(Passive, effect);
+	});
+	pendingPassiveEffects.unmount = [];
+
+	// 触发所有上次更新的 destroy
+	pendingPassiveEffects.update.forEach((effect) => {
+		commitHookEffectListDestroy(Passive | HookHasEffect, effect);
+	});
+
+	// 触发所有上次更新的 create
+	pendingPassiveEffects.update.forEach((effect) => {
+		// 注意这里的一行 不写在‘触发 destroy 的循环中’的原因是：本次更新的任何 create 回调都必须在所有上一次更新的 destroy 回调执行完后再执行
+		commitHookEffectListCreate(Passive, effect);
+	});
+	pendingPassiveEffects.update = [];
+
+	// 在回调过程中（useEffect执行过程中）也有新的更新
+	flashSyncCallbacks();
 }
 
 function workLoop() {
