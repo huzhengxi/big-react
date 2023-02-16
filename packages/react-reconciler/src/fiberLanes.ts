@@ -1,13 +1,11 @@
-import { Lanes } from './fiberLanes';
-import { FiberRootNode } from './fiber';
-import { unstable_NormalPriority, unstable_getCurrentPriorityLevel } from 'scheduler';
 import {
 	unstable_IdlePriority,
 	unstable_ImmediatePriority,
 	unstable_NormalPriority,
 	unstable_UserBlockingPriority,
-	unstable_wrapCallback
+	unstable_getCurrentPriorityLevel
 } from 'scheduler';
+import { FiberRootNode } from './fiber';
 export type Lane = number;
 export type Lanes = number;
 
